@@ -157,8 +157,8 @@ impl RngCore for SimpleTranscriptRng {
     }
 
     fn fill_bytes(&mut self, dest: &mut [u8]) {
-        let dest_len = encode_usize_as_u32(dest.len());
-        self.transcript.update(&dest_len);
+        let mut bytes = [0u8; 32];
+        self.transcript.update(&bytes);
         self.transcript.finalize(dest);
     }
 
@@ -166,14 +166,4 @@ impl RngCore for SimpleTranscriptRng {
         self.fill_bytes(dest);
         Ok(())
     }
-}
-
-fn encode_usize_as_u32(x: usize) -> [u8; 4] {
-    use byteorder::{ByteOrder, LittleEndian};
-
-    assert!(x <= (u32::max_value() as usize));
-
-    let mut buf = [0; 4];
-    LittleEndian::write_u32(&mut buf, x as u32);
-    buf
 }

@@ -157,7 +157,7 @@ impl RngCore for SimpleTranscriptRng {
     }
 
     fn fill_bytes(&mut self, dest: &mut [u8]) {
-        let mut bytes = [0u8; 32];
+        let bytes = [0u8; 8];
         self.transcript.update(&bytes);
         self.transcript.finalize(dest);
     }

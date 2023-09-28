@@ -55,6 +55,18 @@ struct Bls12G1 {
     y: Uint512,
 }
 
+#[derive(Serialize)]
+struct Bls12G2 {
+    x: Bls12Fp2,
+    y: Bls12Fp2,
+}
+
+#[derive(Serialize)]
+struct Bls12Fp2 {
+    c0: Uint512,
+    c1: Uint512,
+}
+
 impl Uint512 {
     pub fn from(bytes: Vec<u8>) -> Self {
         let (h, l) = bytes.split_at(bytes.len() - 32);
@@ -116,5 +128,23 @@ impl Bls12G1 {
             x: Uint512::from(x),
             y: Uint512::from(y),
         }
+    }
+}
+
+impl Bls12G2 {
+    pub fn from(g2: ark_bls12_377::G2Affine) -> Self {
+        let x_c0 = g2.x.c0.into_bigint().to_bytes_be();
+        let x_c1 = g2.x.c1.into_bigint().to_bytes_be();
+        let x = Bls12Fp2 {
+            c0: Uint512::from(x_c0),
+            c1: Uint512::from(x_c1),
+        };
+        let y_c0 = g2.y.c0.into_bigint().to_bytes_be();
+        let y_c1 = g2.y.c1.into_bigint().to_bytes_be();
+        let y = Bls12Fp2 {
+            c0: Uint512::from(y_c0),
+            c1: Uint512::from(y_c1),
+        };
+        Bls12G2 { x, y }
     }
 }
